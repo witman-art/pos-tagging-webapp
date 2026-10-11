@@ -1,0 +1,523 @@
+/* 英文词性标注系统 — Web 界面样式 */
+
+:root {
+  --page-bg: #e8ecef;
+  --paper: #ffffff;
+  --border: #b8c0c8;
+  --border-light: #d0d6dd;
+  --text: #222222;
+  --muted: #555555;
+  --link: #0d47a1;
+  --header-bg: #1565c0;
+  --header-text: #ffffff;
+  --accent: #1565c0;
+  --radius: 4px;
+  --font: "Microsoft YaHei", "微软雅黑", SimSun, "宋体", sans-serif;
+  --mono: Consolas, "Courier New", monospace;
+}
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  margin: 0;
+  min-height: 100vh;
+  font-family: var(--font);
+  font-size: 14px;
+  line-height: 1.6;
+  color: var(--text);
+  background: var(--page-bg);
+}
+
+/* 顶栏：高校网站常见的蓝条，无毛玻璃 */
+.site-header {
+  border-bottom: 2px solid #0d47a1;
+  background: var(--header-bg);
+}
+
+.site-header-inner {
+  position: relative;
+  max-width: 1000px;
+  margin: 0 auto;
+  padding: 14px 16px;
+  min-height: 52px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.site-brand {
+  text-align: center;
+}
+
+.site-header-right {
+  position: absolute;
+  right: 16px;
+  top: 50%;
+  transform: translateY(-50%);
+  max-width: min(340px, 42vw);
+}
+
+@media (max-width: 620px) {
+  .site-header-inner {
+    flex-direction: column;
+    padding-bottom: 10px;
+  }
+  .site-header-right {
+    position: static;
+    transform: none;
+    max-width: 100%;
+    margin-top: 10px;
+  }
+}
+
+.site-title {
+  margin: 0;
+  font-size: 20px;
+  font-weight: bold;
+  color: var(--header-text);
+  letter-spacing: 0.5px;
+}
+
+.sys-status {
+  margin: 0;
+  font-size: 13px;
+  line-height: 1.45;
+  padding: 6px 12px;
+  border-radius: var(--radius);
+  background: rgba(255, 255, 255, 0.12);
+  border: 1px solid rgba(255, 255, 255, 0.22);
+  color: rgba(255, 255, 255, 0.92);
+}
+
+.sys-status.ok {
+  background: rgba(255, 255, 255, 0.16);
+  border-color: rgba(165, 214, 167, 0.45);
+  color: rgba(255, 255, 255, 0.95);
+}
+
+.sys-status.warn {
+  background: rgba(255, 213, 79, 0.14);
+  border-color: rgba(255, 213, 79, 0.4);
+  color: rgba(255, 248, 225, 0.96);
+}
+
+.sys-status.err {
+  background: rgba(239, 154, 154, 0.16);
+  border-color: rgba(239, 154, 154, 0.45);
+  color: rgba(255, 235, 238, 0.98);
+}
+
+.layout {
+  max-width: 1000px;
+  margin: 0 auto;
+  padding: 16px 16px 32px;
+  display: grid;
+  grid-template-columns: 180px 1fr;
+  gap: 16px;
+  align-items: start;
+}
+
+@media (max-width: 720px) {
+  .layout {
+    grid-template-columns: 1fr;
+  }
+}
+
+.sidebar {
+  padding: 10px 12px;
+  background: var(--paper);
+  border: 1px solid var(--border);
+}
+
+.sidebar-section-title {
+  font-size: 13px;
+  font-weight: bold;
+  margin: 0 0 8px;
+  padding-bottom: 6px;
+  border-bottom: 1px solid var(--border-light);
+  color: var(--text);
+}
+
+.sidebar-nav {
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+}
+
+.sidebar-link {
+  display: block;
+  padding: 6px 4px;
+  font-size: 13px;
+  color: var(--link);
+  text-decoration: underline;
+}
+
+.sidebar-link:hover {
+  color: #c62828;
+}
+
+.sidebar-link.is-active {
+  font-weight: bold;
+  color: var(--text);
+  text-decoration: none;
+}
+
+.main-area {
+  min-width: 0;
+}
+
+.breadcrumb {
+  font-size: 12px;
+  color: var(--muted);
+  margin-bottom: 10px;
+}
+
+.breadcrumb .sep {
+  margin: 0 4px;
+}
+
+.card {
+  background: var(--paper);
+  border: 1px solid var(--border);
+  margin-bottom: 14px;
+}
+
+.card-plain {
+  padding: 12px 14px;
+}
+
+.card-header {
+  padding: 10px 14px 0;
+}
+
+.card-header-inline {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 8px;
+}
+
+.card-title {
+  margin: 0 0 6px;
+  font-size: 16px;
+  font-weight: bold;
+  color: var(--text);
+}
+
+.card-desc {
+  margin: 0;
+  font-size: 13px;
+  color: var(--muted);
+  text-indent: 0;
+}
+
+.card-body {
+  padding: 8px 14px 12px;
+}
+
+.field-label {
+  display: block;
+  font-size: 13px;
+  margin-bottom: 4px;
+  color: var(--text);
+}
+
+.import-info {
+  margin: 0 0 8px;
+  padding: 7px 10px;
+  font-size: 13px;
+  color: #1b5e20;
+  background: #eef7ee;
+  border: 1px solid #9ccc9c;
+  border-radius: var(--radius);
+}
+
+#input {
+  width: 100%;
+  min-height: 180px;
+  padding: 8px;
+  font-family: var(--font);
+  font-size: 14px;
+  line-height: 1.5;
+  color: var(--text);
+  background: #fafafa;
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  resize: vertical;
+}
+
+#input::placeholder {
+  color: #888;
+}
+
+#input:focus {
+  outline: 1px solid var(--accent);
+  outline-offset: 0;
+}
+
+.toolbar {
+  margin-top: 10px;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+}
+
+.toolbar-primary,
+.toolbar-export {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+}
+
+/* 导入按钮与相邻按钮同高同款 */
+.toolbar-primary {
+  align-items: stretch;
+}
+
+.toolbar-primary > .btn,
+.toolbar-primary > .file-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 30px;
+  padding: 4px 14px;
+  font-size: 13px;
+  line-height: normal;
+}
+
+.toolbar-primary > .file-btn {
+  cursor: pointer;
+}
+
+.export-label {
+  font-size: 12px;
+  color: var(--muted);
+}
+
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 4px 14px;
+  font-family: inherit;
+  font-size: 13px;
+  cursor: pointer;
+  border-radius: var(--radius);
+  border: 1px solid #999;
+  background: #f5f5f5;
+  color: var(--text);
+}
+
+.btn-primary {
+  background: #1976d2;
+  border-color: #0d47a1;
+  color: #fff;
+  font-weight: normal;
+}
+
+.btn-primary:hover {
+  background: #1565c0;
+}
+
+.btn-secondary {
+  background: #fff;
+}
+
+.btn-secondary:hover {
+  background: #e3f2fd;
+}
+
+.btn-ghost {
+  background: #fff;
+}
+
+.btn-ghost:hover {
+  background: #eeeeee;
+}
+
+.file-btn {
+  position: relative;
+  overflow: hidden;
+}
+
+.btn-export {
+  font-size: 12px;
+  padding: 3px 10px;
+  background: #fff;
+}
+
+.btn-export:hover {
+  background: #e3f2fd;
+}
+
+.output-card .card-header {
+  padding-bottom: 4px;
+}
+
+.hint-text {
+  font-size: 12px;
+  color: var(--muted);
+}
+
+.output-frame {
+  margin: 0 12px 12px;
+  min-height: 100px;
+  padding: 10px;
+  background: #f9f9f9;
+  border: 1px inset var(--border-light);
+}
+
+.output-placeholder,
+.output-loading,
+.output-error {
+  margin: 0;
+  color: var(--muted);
+  font-size: 13px;
+}
+
+.output-loading {
+  color: var(--accent);
+}
+
+.output-error {
+  color: #c62828;
+}
+
+.sentence {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-bottom: 10px;
+  line-height: 1.9;
+}
+
+.sentence:last-child {
+  margin-bottom: 0;
+}
+
+.chip {
+  display: inline-flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+  padding: 2px 4px;
+  border: 1px solid var(--border-light);
+  background: #fff;
+}
+
+.tok {
+  font-weight: bold;
+  font-size: 14px;
+  color: hsl(var(--hue, 210), 65%, 32%);
+}
+
+.tag-label {
+  font-family: var(--mono);
+  font-size: 10px;
+  color: #444;
+}
+
+.g-noun .tok {
+  color: #0d47a1;
+}
+.g-verb .tok {
+  color: #2e7d32;
+}
+.g-adj .tok {
+  color: #ef6c00;
+}
+.g-adv .tok {
+  color: #c2185b;
+}
+.g-prep .tok,
+.g-det .tok {
+  color: #4527a0;
+}
+.g-conj .tok {
+  color: #6a1b9a;
+}
+.g-punct .tok {
+  color: #616161;
+}
+.g-pron .tok {
+  color: #00695c;
+}
+.g-other .tok {
+  color: #37474f;
+}
+
+.para {
+  margin: 0 0 8px;
+  color: var(--text);
+  font-size: 13px;
+  text-align: justify;
+}
+
+.para:last-child {
+  margin-bottom: 0;
+}
+
+.guide-list {
+  margin: 0;
+  padding-left: 22px;
+  font-size: 13px;
+  color: var(--text);
+}
+
+.guide-list li {
+  margin-bottom: 6px;
+}
+
+.rules-list {
+  margin: 0;
+  padding-left: 22px;
+  font-size: 13px;
+  color: var(--text);
+}
+
+.rules-list li {
+  margin-bottom: 8px;
+}
+
+.rules-tag {
+  font-weight: bold;
+  color: var(--accent);
+}
+
+.hint-inline {
+  font-size: 12px;
+  color: var(--muted);
+  margin-top: 10px !important;
+}
+
+.preprocess-note {
+  font-size: 12px;
+  color: var(--muted);
+  margin-top: 10px;
+}
+
+.site-footer {
+  border-top: 1px solid var(--border);
+  padding: 10px 16px 20px;
+  background: var(--page-bg);
+}
+
+.site-footer-inner {
+  max-width: 1000px;
+  margin: 0 auto;
+  font-size: 12px;
+  color: var(--muted);
+  text-align: center;
+}

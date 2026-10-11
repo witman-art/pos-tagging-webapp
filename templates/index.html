@@ -1,0 +1,282 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>英文词性标注系统</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}" />
+</head>
+<body>
+  <header class="site-header">
+    <div class="site-header-inner">
+      <div class="site-brand">
+        <strong class="site-title">英文词性标注系统</strong>
+      </div>
+      <div class="site-header-right">
+        <p id="status" class="sys-status">正在检查模型状态…</p>
+      </div>
+    </div>
+  </header>
+
+  <div class="layout">
+    <aside class="sidebar" aria-label="功能导航">
+      <div class="sidebar-section-title">功能菜单</div>
+      <nav class="sidebar-nav">
+        <a class="sidebar-link is-active" href="#panel-main">词性标注</a>
+        <a class="sidebar-link" href="#panel-rules">标注规则</a>
+        <a class="sidebar-link" href="#panel-about">系统简介</a>
+        <a class="sidebar-link" href="#panel-guide">使用说明</a>
+      </nav>
+    </aside>
+
+    <main class="main-area">
+      <div class="breadcrumb">当前位置：<span>首页</span> <span class="sep">/</span> <span>词性标注</span></div>
+
+      <section id="panel-main" class="card">
+        <div class="card-header">
+          <h2 class="card-title">文本输入与标注</h2>
+          <p class="card-desc">在下方文本框中输入待标注英文；支持多句与多段文本，段落之间可用空行分隔。</p>
+        </div>
+        <div class="card-body">
+          <label class="field-label" for="input">输入英文</label>
+          <div id="importInfo" class="import-info" hidden></div>
+          <textarea id="input" rows="10" placeholder="例如：The quick brown fox jumps over the lazy dog."></textarea>
+          <div class="toolbar">
+            <div class="toolbar-primary">
+              <button type="button" id="btnTag" class="btn btn-primary">开始标注</button>
+              <label class="btn btn-secondary file-btn">
+                导入 TXT / DOCX
+                <input type="file" id="fileIn" accept=".txt,.docx,text/plain" hidden />
+              </label>
+              <button type="button" id="btnClear" class="btn btn-ghost">清空内容</button>
+            </div>
+            <div class="toolbar-export">
+              <span class="export-label">导出结果：</span>
+              <button type="button" class="btn btn-export" data-fmt="html" title="浏览器打开即可上下对齐（等宽字体已写死）">HTML</button>
+              <button type="button" class="btn btn-export" data-fmt="csv">CSV</button>
+              <button type="button" class="btn btn-export" data-fmt="xlsx">Excel</button>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section class="card output-card">
+        <div class="card-header card-header-inline">
+          <h2 class="card-title">标注结果展示</h2>
+          <span class="hint-text">鼠标悬停在词语上可查看完整词性标签</span>
+        </div>
+        <div id="out" class="output output-frame" aria-live="polite"></div>
+      </section>
+
+      <section id="panel-rules" class="card card-plain">
+        <h2 class="card-title">标注规则</h2>
+        <p class="para">
+          本系统输出的词性标签遵循 <strong>Penn Treebank（PTB）</strong> 常用标注规范：每个英文词对应一个标签，标点单独成词并单独标注。以下为常见大类说明（具体细分类以模型输出为准）。
+        </p>
+        <ul class="rules-list">
+          <li><span class="rules-tag">名词类</span>：NN（普通名词）、NNS（复数）、NNP（专有名词）、NNPS（专有名词复数）、PRP（人称代词）等。</li>
+          <li><span class="rules-tag">动词类</span>：VB（动词原形）、VBD（过去式）、VBG（-ing）、VBN（过去分词）、VBZ（第三人称单数）、MD（情态动词）。</li>
+          <li><span class="rules-tag">形容词 / 副词</span>：JJ、JJR、JJS；RB、RBR、RBS。</li>
+          <li><span class="rules-tag">功能词</span>：DT（限定词）、IN（介词或从属连词）、CC（并列连词）、TO、RP（短语动词中的小品词）、WDT/WRB/WP 等 WH-词。</li>
+          <li><span class="rules-tag">标点与其它</span>：句号、逗号等一般使用 <code>.</code>、<code>,</code> 等符号作为标签名；小数点与缩写需结合分词结果判断。</li>
+        </ul>
+        <p class="para preprocess-note">
+          <strong><code>tobe</code> → <code>to be</code>：</strong>
+          若把不定式短语误打成连写单词 <code>tobe</code>，系统在标注前会拆成 <code>to</code>（不定式标记）与 <code>be</code>（动词原形）两个词，与 PTB 常见分词一致，减少整词误判。
+        </p>
+        <p class="para hint-inline">悬停可查看标签。<strong>导出：</strong>要上下列对齐请用 <strong>HTML</strong>（浏览器打开，内置等宽）。CSV / Excel：每句连续两行，<code>sentence</code> + <code>w1</code>…<code>wN</code>，下行同列词性。含中文圆括号说明会在标注前忽略。</p>
+      </section>
+
+      <section id="panel-about" class="card card-plain">
+        <h2 class="card-title">系统简介</h2>
+        <p class="para">
+          本系统用于对英文句子进行自动词性标注。后端采用双向长短期记忆网络（BiLSTM）提取上下文特征，并结合条件随机场（CRF）进行结构化解码，输出符合 Penn Treebank 规范的词性标签。
+        </p>
+      </section>
+
+      <section id="panel-guide" class="card card-plain">
+        <h2 class="card-title">使用说明</h2>
+        <ol class="guide-list">
+          <li>在「文本输入」区域粘贴或输入英文；如需从文件载入，可使用「导入 TXT / DOCX」。</li>
+          <li>导出：HTML 用浏览器打开可对齐；CSV/Excel 每句两行、每词各占一列。</li>
+          <li>若状态栏提示模型未就绪，请确认已完成训练且模型路径配置正确。</li>
+        </ol>
+      </section>
+    </main>
+  </div>
+
+  <footer class="site-footer">
+    <div class="site-footer-inner">
+      <span>英文词性标注系统 · 本地 Web 界面</span>
+    </div>
+  </footer>
+
+  <script>
+    const $ = (s) => document.querySelector(s);
+    const statusEl = $("#status");
+    const outEl = $("#out");
+    const inputEl = $("#input");
+    const importInfoEl = $("#importInfo");
+
+    function tagHue(tag) {
+      let h = 0;
+      for (let i = 0; i < tag.length; i++) h = (h * 31 + tag.charCodeAt(i)) >>> 0;
+      return h % 360;
+    }
+
+    function coarseClass(tag) {
+      const t = tag.toUpperCase();
+      if (/^NN/.test(t)) return "g-noun";
+      if (/^VB/.test(t)) return "g-verb";
+      if (/^JJ/.test(t)) return "g-adj";
+      if (/^RB/.test(t)) return "g-adv";
+      if (/^RP\b/.test(t)) return "g-prep";
+      if (/^IN|TO/.test(t)) return "g-prep";
+      if (/^DT|PDT|WDT/.test(t)) return "g-det";
+      if (/^CC/.test(t)) return "g-conj";
+      if (/^[,.]|^\.|^``|^''|^-LRB-|-RRB-/.test(t)) return "g-punct";
+      if (/^PRP|^WP/.test(t)) return "g-pron";
+      return "g-other";
+    }
+
+    function renderSentences(sentences) {
+      outEl.innerHTML = "";
+      for (const sent of sentences) {
+        const wrap = document.createElement("div");
+        wrap.className = "sentence";
+        for (const { word, tag } of sent) {
+          const span = document.createElement("span");
+          span.className = "tok " + coarseClass(tag);
+          span.style.setProperty("--hue", tagHue(tag));
+          span.textContent = word;
+          span.title = tag;
+          const lab = document.createElement("small");
+          lab.className = "tag-label";
+          lab.textContent = tag;
+          const chip = document.createElement("span");
+          chip.className = "chip";
+          chip.appendChild(span);
+          chip.appendChild(lab);
+          wrap.appendChild(chip);
+        }
+        outEl.appendChild(wrap);
+      }
+    }
+
+    async function checkHealth() {
+      try {
+        const r = await fetch("/api/health");
+        const j = await r.json();
+        statusEl.textContent = j.model_ready
+          ? "模型就绪，可进行标注。"
+          : "未检测到模型文件，请检查模型路径是否配置正确。";
+        statusEl.className = "sys-status " + (j.model_ready ? "ok" : "warn");
+      } catch (e) {
+        statusEl.textContent = "无法连接后端服务。";
+        statusEl.className = "sys-status err";
+      }
+    }
+
+    async function doTag() {
+      const text = inputEl.value.trim();
+      if (!text) {
+        outEl.innerHTML = '<p class="output-placeholder">请输入英文文本后再点击「开始标注」。</p>';
+        return;
+      }
+      outEl.innerHTML = '<p class="output-loading">正在标注，请稍候…</p>';
+      try {
+        const r = await fetch("/api/tag", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ text }),
+        });
+        const j = await r.json();
+        if (!r.ok) {
+          outEl.innerHTML = '<p class="output-error">' + (j.error || "请求失败") + "</p>";
+          return;
+        }
+        renderSentences(j.sentences);
+      } catch (e) {
+        outEl.innerHTML = '<p class="output-error">网络异常：' + e + "</p>";
+      }
+    }
+
+    async function doExport(fmt) {
+      const text = inputEl.value.trim();
+      if (!text) {
+        alert("请先输入待标注文本后再导出。");
+        return;
+      }
+      const r = await fetch("/api/export", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ text, format: fmt }),
+      });
+      if (!r.ok) {
+        const j = await r.json().catch(() => ({}));
+        alert(j.error || "导出失败");
+        return;
+      }
+      const blob = await r.blob();
+      const dispo = r.headers.get("Content-Disposition") || "";
+      const m = /filename[^;=\n]*=((['"]).*?\2|[^;\n]*)/.exec(dispo);
+      const name = m ? m[1].replace(/['"]/g, "") : "pos_export." + fmt;
+      const a = document.createElement("a");
+      a.href = URL.createObjectURL(blob);
+      a.download = name;
+      a.click();
+      URL.revokeObjectURL(a.href);
+    }
+
+    document.querySelectorAll(".sidebar-link").forEach((link) => {
+      link.addEventListener("click", () => {
+        document.querySelectorAll(".sidebar-link").forEach((l) => l.classList.remove("is-active"));
+        link.classList.add("is-active");
+      });
+    });
+
+    $("#btnTag").addEventListener("click", doTag);
+    $("#btnClear").addEventListener("click", () => {
+      inputEl.value = "";
+      importInfoEl.hidden = true;
+      importInfoEl.textContent = "";
+      outEl.innerHTML = '<p class="output-placeholder">标注结果将显示在此处。</p>';
+    });
+    document.querySelectorAll(".toolbar-export button").forEach((b) =>
+      b.addEventListener("click", () => doExport(b.dataset.fmt))
+    );
+
+    $("#fileIn").addEventListener("change", async (e) => {
+      const f = e.target.files[0];
+      if (!f) return;
+      const lower = f.name.toLowerCase();
+      if (lower.endsWith(".docx") || lower.endsWith(".txt")) {
+        const fd = new FormData();
+        fd.append("file", f);
+        try {
+          const r = await fetch("/api/upload", { method: "POST", body: fd });
+          const j = await r.json();
+          if (!r.ok) {
+            alert(j.error || "上传失败");
+            e.target.value = "";
+            return;
+          }
+          inputEl.value = j.text || "";
+          importInfoEl.hidden = false;
+          importInfoEl.textContent =
+            "已导入" + (j.source || "文件") + "：" + (j.filename || f.name) + "，文件内容已自动填入下方文本框。";
+        } catch (err) {
+          alert("上传错误 " + err);
+        }
+        e.target.value = "";
+        return;
+      }
+      alert("请上传 .txt 或 .docx 文件");
+      e.target.value = "";
+    });
+
+    outEl.innerHTML = '<p class="output-placeholder">标注结果将显示在此处。</p>';
+    checkHealth();
+  </script>
+</body>
+</html>

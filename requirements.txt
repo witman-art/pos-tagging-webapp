@@ -1,0 +1,8 @@
+Flask
+torch
+nltk
+python-docx
+openpyxl
+matplotlib
+tqdm
+pytorch-crf

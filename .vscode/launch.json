@@ -1,0 +1,28 @@
+{
+  "version": "0.2.0",
+  "configurations": [
+    {
+      "name": "Flask POS Tagger",
+      "type": "python",
+      "request": "launch",
+      "program": "${workspaceFolder}/app.py",
+      "cwd": "${workspaceFolder}",
+      "console": "integratedTerminal",
+      "justMyCode": true
+    },
+    {
+      "name": "Flask: flask run (模块)",
+      "type": "python",
+      "request": "launch",
+      "module": "flask",
+      "cwd": "${workspaceFolder}",
+      "console": "integratedTerminal",
+      "env": {
+        "FLASK_APP": "app:app",
+        "FLASK_DEBUG": "0"
+      },
+      "args": ["run", "--host", "127.0.0.1", "--port", "5000", "--no-debugger", "--no-reload"],
+      "justMyCode": true
+    }
+  ]
+}
