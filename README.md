@@ -80,4 +80,4 @@ python system_test.py
 
 ## 作者
 
-witman-art — 武汉工程大学 人工智能专业 本科毕业设计
+witman-art — 个人设计
